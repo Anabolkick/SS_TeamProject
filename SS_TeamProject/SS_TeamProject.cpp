@@ -9,7 +9,7 @@ using namespace std;
 namespace fs = std::filesystem;
 
 void ShowAllFiles(string path_str);
-vector<const char*> FindMP3(string path_str);
+vector<string> FindMP3(string path_str);
 void PrintTags(vector<TagLib::FileRef> files, int num);
 
 int main()
@@ -20,12 +20,30 @@ int main()
 	getline(cin, path_str);
 
 	//ShowAllFiles(path_str);
-	vector<const char*> paths(FindMP3(path_str));
-	vector<TagLib::FileRef> files(paths.size());
-	for (int i=0; i < files.size(); ++i)
-		files[i].create(paths[i]);
-	for (int i = 0; i < files.size(); ++i)
-		PrintTags(files, files.size());
+
+	vector<string> paths(FindMP3(path_str));
+
+//	vector<TagLib::FileRef> files(paths.size());
+
+	//for (int i = 0; i < files.size(); i++)
+	//{
+	//	files[i].create(paths[i].c_str());
+	//}
+
+	
+	const char* go = paths[0].c_str();
+
+	TagLib::FileRef f(go);
+	
+	cout << f.tag()->title();
+
+
+
+	/*for (int i = 0; i < files.size(); i++)
+	{
+		PrintTags(files,  i);
+	}*/
+	
 }
 
 //Выводит все файлы
@@ -56,9 +74,9 @@ void ShowAllFiles(string path_str)
 	}
 }
 
-vector<const char*> FindMP3(string path_str)
+vector<string> FindMP3(string path_str)
 {
-	vector<const char*> paths;
+	vector<string> paths;
 	try
 	{
 		fs::directory_iterator it(path_str);
@@ -72,9 +90,9 @@ vector<const char*> FindMP3(string path_str)
 			//Если поиск сразу в диске (С:/ ), инчае (С:// ) и получаеться лишний символ 
 			if (file_name.find(".mp3") != string::npos)
 			{
-				paths.push_back(file_name.c_str());
+				paths.push_back(file_name);
 
-				//cout << file_name << endl;   //For debug
+				cout << file_name << endl;   //For debug
 			}
 		}
 	}
