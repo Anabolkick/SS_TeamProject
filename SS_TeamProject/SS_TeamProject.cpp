@@ -46,7 +46,7 @@ void ShowAllFiles(string path_str)
 	}
 	catch (exception ex)
 	{
-		cout << "Error. Try other path!!" << endl;
+		//cout << "Error. Try other path!!" << endl;
 		//ShowAllFiles(path_str);
 	}
 }
