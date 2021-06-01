@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 
 void ShowAllFiles(string path_str);
 vector<string> FindMP3(string path_str);
-void PrintTags(vector<TagLib::FileRef> files, int num);
+void PrintTags(TagLib::FileRef file);
 
 int main()
 {
@@ -23,27 +23,20 @@ int main()
 
 	vector<string> paths(FindMP3(path_str));
 
-//	vector<TagLib::FileRef> files(paths.size());
+	vector<TagLib::FileRef> files;
 
-	//for (int i = 0; i < files.size(); i++)
-	//{
-	//	files[i].create(paths[i].c_str());
-	//}
-
-	
-	const char* go = paths[0].c_str();
-
-	TagLib::FileRef f(go);
-	
-	cout << f.tag()->title();
-
-
-
-	/*for (int i = 0; i < files.size(); i++)
+	for (int i = 0; i < paths.size(); i++)	 //PATHES.SIZE ????
 	{
-		PrintTags(files,  i);
-	}*/
-	
+		const char* temp = paths[i].c_str();
+		TagLib::FileRef f(temp);
+		files.push_back(f);
+	}
+
+	for (int i = 0; i < files.size(); i++)
+	{
+		PrintTags(files[i]);
+	}
+		 
 }
 
 //Âûגמהטע גסו פאיכû
@@ -105,13 +98,13 @@ vector<string> FindMP3(string path_str)
 	return paths;
 }
 
-void PrintTags(vector<TagLib::FileRef> files, int num) {
+void PrintTags(TagLib::FileRef file) {
 	cout << "______________________________________________" << endl;
-	cout << "Title: \t\t" << files[num].tag()->title() << endl;
-	cout << "Artist: \t\t" << files[num].tag()->artist() << endl;
-	cout << "Album: \t" << files[num].tag()->album() << endl;
-	cout << "Year:" << files[num].tag()->year() << endl;
-	cout << "Track:" << files[num].tag()->track() << endl;
-	cout << "Comment: \t" << files[num].tag()->comment() << endl;
-	cout << "Genre: \t\t" << files[num].tag()->genre() << endl;
+	cout << "Title: \t\t" << file.tag()->title() << endl;
+	cout << "Artist: \t\t" << file.tag()->artist() << endl;
+	cout << "Album: \t" << file.tag()->album() << endl;
+	cout << "Year:" << file.tag()->year() << endl;
+	cout << "Track:" << file.tag()->track() << endl;
+	cout << "Comment: \t" << file.tag()->comment() << endl;
+	cout << "Genre: \t\t" << file.tag()->genre() << endl;
 }
