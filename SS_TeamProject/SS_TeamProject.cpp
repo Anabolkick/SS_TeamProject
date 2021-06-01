@@ -1,4 +1,4 @@
-#include <filesystem>
+п»ї#include <filesystem>
 #include <iomanip>
 #include <iostream>
 #include <string> 
@@ -16,17 +16,18 @@ void SetAll(TagLib::FileRef& file);
 int main()
 {
 	string path_str;
+	vector<TagLib::FileRef> files;
+
 
 	cout << "Enter path to the folder:" << endl;
 	getline(cin, path_str);
 
-	//ShowAllFiles(path_str);
+	ShowAllFiles(path_str);
+
 
 	vector<string> paths(FindMP3(path_str));
 
-	vector<TagLib::FileRef> files;
-
-	for (int i = 0; i < paths.size(); i++)	 //PATHES.SIZE ????
+	for (int i = 0; i < paths.size(); i++)	 
 	{
 		const char* temp = paths[i].c_str();
 		TagLib::FileRef f(temp);
@@ -48,9 +49,9 @@ int main()
 	}
 }
 
-//Выводит все файлы
+//Р’С‹РІРѕРґРёС‚ РІСЃРµ С„Р°Р№Р»С‹
 void ShowAllFiles(string path_str)
-{
+{														  
 	try
 	{
 		fs::directory_iterator it(path_str);
@@ -61,19 +62,27 @@ void ShowAllFiles(string path_str)
 			fs::path path = it->path();
 			file_name = path.string();
 
-			//Если поиск сразу в диске (С:/ ), инчае (С:// ) и получаеться лишний символ 
+			//Р•СЃР»Рё РїРѕРёСЃРє СЃСЂР°Р·Сѓ РІ РґРёСЃРєРµ (РЎ:/ ), РёРЅС‡Р°Рµ (РЎ:// ) Рё РїРѕР»СѓС‡Р°РµС‚СЊСЃСЏ Р»РёС€РЅРёР№ СЃРёРјРІРѕР» 
 			if(path_str.length() >= 4)   { file_name.erase(0, path_str.length() + 1);}
 			else { file_name.erase(0, path_str.length()); }
 
+			if (file_name.find(".mp3") != string::npos)
+			{
+				HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+				SetConsoleTextAttribute(hConsole, 10);	
+				cout << char(254) << " ";
+				SetConsoleTextAttribute(hConsole, 7);
+			}
 
-			cout << file_name << endl;
+			cout <<file_name << endl;			
 		}
 	}
 	catch (exception ex)
 	{
-		//cout << "Error. Try other path!!" << endl;
-		//ShowAllFiles(path_str);
+		cout << "Error 1. Pleace, try to enter path again" << endl;
+		ShowAllFiles(path_str);
 	}
+
 }
 
 vector<string> FindMP3(string path_str)
@@ -89,19 +98,19 @@ vector<string> FindMP3(string path_str)
 			fs::path path = it->path();
 			file_name = path.string();
 
-			//Если поиск сразу в диске (С:/ ), инчае (С:// ) и получаеться лишний символ 
+			//Р•СЃР»Рё РїРѕРёСЃРє СЃСЂР°Р·Сѓ РІ РґРёСЃРєРµ (РЎ:/ ), РёРЅС‡Р°Рµ (РЎ:// ) Рё РїРѕР»СѓС‡Р°РµС‚СЃСЏ Р»РёС€РЅРёР№ СЃРёРјРІРѕР» 
 			if (file_name.find(".mp3") != string::npos)
 			{
 				paths.push_back(file_name);
 
-				cout << file_name << endl;   //For debug
+			//	cout << file_name << endl;   //For debug
 			}
 		}
 	}
 	catch (exception ex)
 	{
-		cout << "Error. Try other path!!" << endl;	//TODO Change text
-		//ShowAllFiles(path_str);
+		cout << "Error 2. Pleace, try to enter path again" << endl;	//TODO Change text
+		FindMP3(path_str);
 	}
 
 	return paths;
