@@ -10,7 +10,8 @@ namespace fs = std::filesystem;
 
 void ShowAllFiles(string path_str);
 vector<string> FindMP3(string path_str);
-void PrintTags(TagLib::FileRef file);
+void PrintTags(TagLib::FileRef& file);
+void SetAll(TagLib::FileRef& file);
 
 int main()
 {
@@ -36,7 +37,15 @@ int main()
 	{
 		PrintTags(files[i]);
 	}
-		 
+	
+	//test of function SetAll()
+	SetAll(files[0]);
+	PrintTags(files[0]);
+
+	for (int i = 0; i < files.size(); i++)
+	{
+		files[i].save();
+	}
 }
 
 //Âûגמהטע גסו פאיכû
@@ -98,13 +107,25 @@ vector<string> FindMP3(string path_str)
 	return paths;
 }
 
-void PrintTags(TagLib::FileRef file) {
+void PrintTags(TagLib::FileRef& file) {
 	cout << "______________________________________________" << endl;
 	cout << "Title: \t\t" << file.tag()->title() << endl;
-	cout << "Artist: \t\t" << file.tag()->artist() << endl;
-	cout << "Album: \t" << file.tag()->album() << endl;
-	cout << "Year:" << file.tag()->year() << endl;
-	cout << "Track:" << file.tag()->track() << endl;
+	cout << "Artist: \t" << file.tag()->artist() << endl;
+	cout << "Album: \t\t" << file.tag()->album() << endl;
+	cout << "Year: \t\t" << file.tag()->year() << endl;
+	cout << "Track: \t\t" << file.tag()->track() << endl;
 	cout << "Comment: \t" << file.tag()->comment() << endl;
 	cout << "Genre: \t\t" << file.tag()->genre() << endl;
+}
+
+void SetAll(TagLib::FileRef& file) {
+	string scan = " ";
+	//getline(cin, scan); not yet, it's for switch
+	cout << "\nTitle: "; getline(cin, scan); file.tag()->setTitle(scan);
+	cout << "Artist: "; getline(cin, scan); file.tag()->setArtist(scan);
+	cout << "Album: "; getline(cin, scan); file.tag()->setAlbum(scan);
+	cout << "Year: "; getline(cin, scan); file.tag()->setYear(stoi(scan));
+	cout << "Track: "; getline(cin, scan); file.tag()->setTrack(stoi(scan));
+	cout << "Comment: "; getline(cin, scan); file.tag()->setComment(scan);
+	cout << "Genre: "; getline(cin, scan); file.tag()->setGenre(scan);
 }
