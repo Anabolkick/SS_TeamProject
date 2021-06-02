@@ -8,6 +8,7 @@
 using namespace std;
 namespace fs = std::filesystem;
 
+string SelectPath();
 void ShowAllFiles(string path_str);
 vector<string> FindMP3(string path_str);
 void PrintTags(TagLib::FileRef& file);
@@ -15,22 +16,21 @@ void SetAll(TagLib::FileRef& file);
 void SetOne(TagLib::FileRef& file, int tag);
 int CheckInput(int size);
 
+
 int main()
 {
-	string path_str, scan = " ";
+	string path_str, scan;
 	int f_size = 0, value = -1;
 	vector<TagLib::FileRef> files;
 
-
-	cout << "Enter path to the folder:" << endl;
-	getline(cin, path_str);
+	path_str = SelectPath();
 
 	ShowAllFiles(path_str);
 
 
 	vector<string> paths(FindMP3(path_str));
 
-	for (int i = 0; i < paths.size(); i++)	 
+	for (int i = 0; i < paths.size(); i++)
 	{
 		const char* temp = paths[i].c_str();
 		TagLib::FileRef f(temp);
@@ -103,69 +103,70 @@ int main()
 	}
 }
 
-//Выводит все файлы
-void ShowAllFiles(string path_str)
-{														  
+string SelectPath()
+{
+	string path_str;
+	cout << "Enter path to the folder:" << endl;
+	getline(cin, path_str);
 	try
 	{
 		fs::directory_iterator it(path_str);
-
-		for (; !it._At_end(); it++)
-		{
-			string file_name;
-			fs::path path = it->path();
-			file_name = path.string();
-
-			//Если поиск сразу в диске (С:/ ), инчае (С:// ) и получаеться лишний символ 
-			if(path_str.length() >= 4)   { file_name.erase(0, path_str.length() + 1);}
-			else { file_name.erase(0, path_str.length()); }
-
-			if (file_name.find(".mp3") != string::npos)
-			{
-				HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-				SetConsoleTextAttribute(hConsole, 10);	
-				cout << char(254) << " ";
-				SetConsoleTextAttribute(hConsole, 7);
-			}
-
-			cout <<file_name << endl;			
-		}
 	}
 	catch (exception ex)
 	{
-		cout << "Error 1. Pleace, try to enter path again" << endl;
-		ShowAllFiles(path_str);
+		cout << "Pleace, try to enter path again" << endl;
 	}
+	return path_str;
+}
+//Выводит все файлы
+void ShowAllFiles(string path_str)
+{
+	fs::directory_iterator it(path_str);
 
+	for (; !it._At_end(); it++)
+	{
+		string file_name;
+		fs::path path = it->path();
+		file_name = path.string();
+
+		//Если поиск сразу в диске (С:/ ), инчае (С:// ) и получаеться лишний символ 
+		if (path_str.length() >= 4) { file_name.erase(0, path_str.length() + 1); }
+		else { file_name.erase(0, path_str.length()); }
+
+		if (file_name.find(".mp3") != string::npos)
+		{
+			HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsole, 10);
+			cout << char(254) << " ";
+			SetConsoleTextAttribute(hConsole, 7);
+		}
+
+		cout << file_name << endl;
+	}
 }
 
 vector<string> FindMP3(string path_str)
 {
 	vector<string> paths;
-	try
+
+	fs::directory_iterator it(path_str);
+
+	for (; !it._At_end(); it++)
 	{
-		fs::directory_iterator it(path_str);
+		string file_name;
+		fs::path path = it->path();
+		file_name = path.string();
 
-		for (; !it._At_end(); it++)
+		//Если поиск сразу в диске (С:/ ), инчае (С:// ) и получается лишний символ 
+		if (file_name.find(".mp3") != string::npos)
 		{
-			string file_name;
-			fs::path path = it->path();
-			file_name = path.string();
-
-			//Если поиск сразу в диске (С:/ ), инчае (С:// ) и получается лишний символ 
-			if (file_name.find(".mp3") != string::npos)
-			{
-				paths.push_back(file_name);
+			paths.push_back(file_name);
 
 			//	cout << file_name << endl;   //For debug
-			}
 		}
 	}
-	catch (exception ex)
-	{
-		cout << "Error 2. Pleace, try to enter path again" << endl;	//TODO Change text
-		FindMP3(path_str);
-	}
+
+
 
 	return paths;
 }
@@ -228,7 +229,7 @@ int CheckInput(int size) {
 		if (file < 1 || file > size) {
 			throw "Incorrect input! ";
 		}
-		return file-1;
+		return file - 1;
 	}
 	catch (string warn) {
 		cout << warn << "Enter number between 1 and " << size << "!";
