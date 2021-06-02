@@ -19,7 +19,7 @@ int CheckInput(int size);
 
 int main()
 {
-	string path_str, scan;
+	string path_str, scan= " " ;
 	int f_size = 0, value = -1;
 	vector<TagLib::FileRef> files;
 
@@ -115,6 +115,7 @@ string SelectPath()
 	catch (exception ex)
 	{
 		cout << "Pleace, try to enter path again" << endl;
+		SelectPath();
 	}
 	return path_str;
 }
