@@ -8,14 +8,14 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-void SelectFile(string& path_str);
-void ShowAllFiles(string path_str);
+void SelectFile(string& path_str, vector<TagLib::FileRef> & files);
+void ShowAllFiles(string path_str, vector<TagLib::FileRef>& files);
 void PrintTags(TagLib::FileRef& file);
 void SetAll(TagLib::FileRef& file);
 void SetOne(TagLib::FileRef& file, int tag);
 int CheckInput(int size);
 vector<string> FindMP3(string path_str);
-void SelectPath(string & path_str);
+void SelectPath(string& path_str);
 
 
 
@@ -27,18 +27,7 @@ int main()
 
 	SelectPath(path_str);
 
-	ShowAllFiles(path_str);
-
-
-	vector<string> paths(FindMP3(path_str));
-
-	// Заполняем paths
-	for (int i = 0; i < paths.size(); i++)
-	{
-		const char* temp = paths[i].c_str();
-		TagLib::FileRef f(temp);
-		files.push_back(f);
-	}
+	ShowAllFiles(path_str, files);
 
 	f_size = files.size();
 
@@ -106,14 +95,14 @@ int main()
 	}
 }
 
-void SelectPath(string & path_str)
+void SelectPath(string& path_str)
 {
 	cout << "Enter path to the folder:" << endl;
 	getline(cin, path_str);
 	try
 	{
 		fs::directory_iterator it(path_str);
-		
+
 	}
 	catch (exception ex)
 	{
@@ -122,7 +111,7 @@ void SelectPath(string & path_str)
 	}
 }
 //Выводит все файлы
-void ShowAllFiles(string path_str)
+void ShowAllFiles(string path_str, vector<TagLib::FileRef> & files)
 {
 	fs::directory_iterator it(path_str);
 
@@ -161,7 +150,17 @@ void ShowAllFiles(string path_str)
 		cout << file_name << endl;
 	}
 
-	SelectFile(path_str);
+	vector<string> paths(FindMP3(path_str));
+
+	// Заполняем paths
+	for (int i = 0; i < paths.size(); i++)
+	{
+		const char* temp = paths[i].c_str();
+		TagLib::FileRef f(temp);
+		files.push_back(f);
+	}
+
+	SelectFile(path_str, files);
 }
 
 vector<string> FindMP3(string path_str)
@@ -199,6 +198,7 @@ void PrintTags(TagLib::FileRef& file) {
 	cout << "Track: \t\t" << file.tag()->track() << endl;
 	cout << "Comment: \t" << file.tag()->comment() << endl;
 	cout << "Genre: \t\t" << file.tag()->genre() << endl;
+	cout << "______________________________________________" << endl << endl;
 }
 
 void SetAll(TagLib::FileRef& file) {
@@ -256,47 +256,104 @@ int CheckInput(int size) {
 	}
 }
 
-void SelectFile(string& path_str)
+void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 {
-	string file_name;
-	cout << "Enter name or file of folder" << endl;
-	getline(cin, file_name);
+	string command;
+	cout << "Enter file to edit or folder to switch" << endl;
+	cout << "'all' - To change/write tags for all files." << endl;
+	getline(cin, command);
 
 	fs::directory_iterator it(path_str);
-
-	string new_path = path_str;
-	string temp;
-
-	if (new_path.length() >= 4)
+	if (command == "all")
 	{
-		temp = "\\" + file_name;
+		int f_size = files.size();
+		int value, value_prn = -1, value_set = -1, prn_file = -1, set_file = -1, tag = -1;
+		cout << "\nChoose the operation:\n 1-Print tags\n 2-Set tags\n 0-Exit" << endl;
+		cin >> value;
+		switch (value) {
+		case 1:
+			for (int i = 0; i < f_size; i++)
+			{
+				PrintTags(files[i]);
+			}
+			break;
+
+		case 2:
+			cout << "\nChoose the operation:\n 1-Set all tags for all files\n 2-Set one tag for all files\n 0-Back" << endl;
+			cin >> value_set;
+			switch (value_set) {
+			case 1:
+				for (int i = 0; i < f_size; i++)
+				{
+					cout << "\n--------Input for file " << i + 1 << "--------" << endl;
+					SetAll(files[i]);
+				}
+				break;
+			case 2:
+				cout << "\nChoose the tag:\n 1-Title\t 5-Track\n 2-Artist\t 6-Comment\n 3-Album\t 7-Genre\n 4-Year" << endl;
+				tag = CheckInput(7);
+				for (int i = 0; i < f_size; i++)
+				{
+					cout << "\n--------Input for file " << i + 1 << "--------" << endl;
+					SetOne(files[i], tag);
+				}
+				break;
+
+			}
+			break;
+		}
 	}
 	else
 	{
-		temp = file_name;
-	}
+		string new_path = path_str;
+		string temp;
 
-	new_path.append(temp);
+		if (new_path.length() >= 4) { temp = "\\" + command; }
+		else { temp = command; }
 
-	for (; !it._At_end(); it++)
-	{
-		fs::path path = it->path();
-		string path_str = path.string();
+		new_path.append(temp);
 
-
-		if (path_str.find(file_name) && path_str.find(".mp3") != string::npos)
+		for (; !it._At_end(); it++)
 		{
-			const char* temp = path_str.c_str();
-			TagLib::FileRef f(temp);
-			
-			PrintTags(f); // TODO 	 выбор выводить или изменять
-			break;
-		}
-		else if (path_str == new_path &&  it->is_directory())
-		{
-			ShowAllFiles(new_path);
-			break;
-		}
+			fs::path path = it->path();
+			string path_str = path.string();
 
+			if (path_str.find(command) != string::npos && path_str.find(".mp3") != string::npos)
+			{
+				const char* temp = path_str.c_str();
+				TagLib::FileRef f(temp);
+
+				cout << "\nChoose the operation:\n 1-Print tags\n 2-Set tags\n 0-Exit" << endl; // TODO 	 выбор выводить или изменять
+				int value = -1, value_set = -1, set_file = -1, tag = -1;	 //Могу ли я ка
+				cin >> value;
+				switch (value) {
+				case 1:
+					PrintTags(f);
+					break;
+				case 2:
+					cout << "\nChoose the operation:\n 1-Set all tags\n 2-Set one tags \n 0-Back" << endl;
+					cin >> value_set;
+					//getline(cin, scan);
+
+					switch (value_set) {
+					case 1:
+						SetAll(f);
+						break;
+					case 2:
+						cout << "\nChoose the tag:\n 1-Title\t 5-Track\n 2-Artist\t 6-Comment\n 3-Album\t 7-Genre\n 4-Year" << endl;
+						tag = CheckInput(7);
+						cout << "Input for file " << set_file << endl;
+						SetOne(f, tag);
+					}
+				}
+				break;
+			}
+			else if (path_str == new_path && it->is_directory())
+			{
+				ShowAllFiles(new_path, files);
+				break;
+			}
+
+		}
 	}
 }
