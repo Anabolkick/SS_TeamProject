@@ -12,10 +12,13 @@ void ShowAllFiles(string path_str);
 vector<string> FindMP3(string path_str);
 void PrintTags(TagLib::FileRef& file);
 void SetAll(TagLib::FileRef& file);
+void SetOne(TagLib::FileRef& file, int tag);
+int CheckInput(int size);
 
 int main()
 {
-	string path_str;
+	string path_str, scan = " ";
+	int f_size = 0, value = -1;
 	vector<TagLib::FileRef> files;
 
 
@@ -34,14 +37,65 @@ int main()
 		files.push_back(f);
 	}
 
-	for (int i = 0; i < files.size(); i++)
-	{
-		PrintTags(files[i]);
+	f_size = files.size();
+
+	//menu
+	while (value != 0) {
+		int value_prn = -1, value_set = -1, prn_file = -1, set_file = -1, tag = -1;
+		cout << "\nChoose the operation:\n 1-Print tags\n 2-Set tags\n 0-Exit" << endl;
+		cin >> value;
+		switch (value) {
+		case 1:
+			cout << "\nChoose the operation:\n 1-Print tags for all files\n 2-Print tags for one file\n 0-Back" << endl;
+			cin >> value_prn;
+			getline(cin, scan);
+			switch (value_prn) {
+			case 1:
+				for (int i = 0; i < f_size; i++)
+				{
+					PrintTags(files[i]);
+				}
+				break;
+			case 2:
+				prn_file = CheckInput(f_size);
+				PrintTags(files[prn_file]);
+			}
+			break;
+		case 2:
+			cout << "\nChoose the operation:\n 1-Set all tags for all files\t 3-Set all tags for one file\n 2-Set one tag for all files\t 4-Set one tags for one file\n 0-Back" << endl;
+			cin >> value_set;
+			getline(cin, scan);
+			switch (value_set) {
+			case 1:
+				for (int i = 0; i < f_size; i++)
+				{
+					cout << "\n--------Input for file " << i + 1 << "--------" << endl;
+					SetAll(files[i]);
+				}
+				break;
+			case 2:
+				cout << "\nChoose the tag:\n 1-Title\t 5-Track\n 2-Artist\t 6-Comment\n 3-Album\t 7-Genre\n 4-Year" << endl;
+				tag = CheckInput(7);
+				for (int i = 0; i < f_size; i++)
+				{
+					cout << "\n--------Input for file " << i + 1 << "--------" << endl;
+					SetOne(files[i], tag);
+				}
+				break;
+			case 3:
+				set_file = CheckInput(f_size);
+				cout << "\n--------Input for file " << set_file + 1 << "--------" << endl;
+				SetAll(files[set_file]);
+				break;
+			case 4:
+				set_file = CheckInput(f_size);
+				cout << "\nChoose the tag:\n 1-Title\t 5-Track\n 2-Artist\t 6-Comment\n 3-Album\t 7-Genre\n 4-Year" << endl;
+				tag = CheckInput(7);
+				cout << "Input for file " << set_file << endl;
+				SetOne(files[set_file], tag);
+			}
+		}
 	}
-	
-	//test of function SetAll()
-	SetAll(files[0]);
-	PrintTags(files[0]);
 
 	for (int i = 0; i < files.size(); i++)
 	{
@@ -129,7 +183,6 @@ void PrintTags(TagLib::FileRef& file) {
 
 void SetAll(TagLib::FileRef& file) {
 	string scan = " ";
-	//getline(cin, scan); not yet, it's for switch
 	cout << "\nTitle: "; getline(cin, scan); file.tag()->setTitle(scan);
 	cout << "Artist: "; getline(cin, scan); file.tag()->setArtist(scan);
 	cout << "Album: "; getline(cin, scan); file.tag()->setAlbum(scan);
@@ -137,4 +190,48 @@ void SetAll(TagLib::FileRef& file) {
 	cout << "Track: "; getline(cin, scan); file.tag()->setTrack(stoi(scan));
 	cout << "Comment: "; getline(cin, scan); file.tag()->setComment(scan);
 	cout << "Genre: "; getline(cin, scan); file.tag()->setGenre(scan);
+}
+
+void SetOne(TagLib::FileRef& file, int tag) {
+	string scan = " ";
+	switch (tag) {
+	case 0:
+		cout << "\nTitle: "; getline(cin, scan); file.tag()->setTitle(scan);
+		break;
+	case 1:
+		cout << "\nArtist: "; getline(cin, scan); file.tag()->setArtist(scan);
+		break;
+	case 2:
+		cout << "\nAlbum: "; getline(cin, scan); file.tag()->setAlbum(scan);
+		break;
+	case 3:
+		cout << "\nYear: "; getline(cin, scan); file.tag()->setYear(stoi(scan));
+		break;
+	case 4:
+		cout << "\nTrack: "; getline(cin, scan); file.tag()->setTrack(stoi(scan));
+		break;
+	case 5:
+		cout << "\nComment: "; getline(cin, scan); file.tag()->setComment(scan);
+		break;
+	case 6:
+		cout << "\nGenre: "; getline(cin, scan); file.tag()->setGenre(scan);
+	}
+}
+
+int CheckInput(int size) {
+	int file = -1;
+	string scan = " ";
+	cout << "\nWrite a number of the file/tag: "; //how to write more universal?
+	cin >> file;
+	getline(cin, scan);
+	try {
+		if (file < 1 || file > size) {
+			throw "Incorrect input! ";
+		}
+		return file-1;
+	}
+	catch (string warn) {
+		cout << warn << "Enter number between 1 and " << size << "!";
+		CheckInput(size);
+	}
 }
