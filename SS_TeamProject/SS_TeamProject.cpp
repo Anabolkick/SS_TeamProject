@@ -179,12 +179,8 @@ vector<string> FindMP3(string path_str)
 		if (file_name.find(".mp3") != string::npos)
 		{
 			paths.push_back(file_name);
-
-			//	cout << file_name << endl;   //For debug
 		}
 	}
-
-
 
 	return paths;
 }
@@ -322,11 +318,25 @@ void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 
 			if (path_str.find(command) != string::npos && path_str.find(".mp3") != string::npos)
 			{
-				const char* temp = path_str.c_str();
-				TagLib::FileRef f(temp);
 
+				//const char* temp = path_str.c_str();
+				
+				TagLib::FileRef f;
+
+				for (int i = 0; i < files.size(); i++)
+				{
+					if (files[i].file()->name().toString() == path_str) 
+					{
+						f = files[i];
+						break;
+					}
+
+					cout << files[i].file()->name().toString();
+						
+				}
+				
 				cout << "\nChoose the operation:\n 1-Print tags\n 2-Set tags\n 0-Exit\n" << temp << endl; // TODO 	 выбор выводить или изменять
-				int value = -1, value_set = -1, set_file = -1, tag = -1;	 //Могу ли я ка
+				int value = -1, value_set = -1, set_file = -1, tag = -1;	 
 				cin >> value;
 				switch (value) {
 				case 1:
