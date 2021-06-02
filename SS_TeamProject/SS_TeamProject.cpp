@@ -275,8 +275,7 @@ void SelectFile(string& path_str)
 	{
 		temp = file_name;
 	}
-	
-	
+
 	new_path.append(temp);
 
 	for (; !it._At_end(); it++)
@@ -285,7 +284,7 @@ void SelectFile(string& path_str)
 		string path_str = path.string();
 
 
-		if (path_str == new_path && path_str.find(".mp3") != string::npos)
+		if (path_str.find(file_name) && path_str.find(".mp3") != string::npos)
 		{
 			const char* temp = path_str.c_str();
 			TagLib::FileRef f(temp);
