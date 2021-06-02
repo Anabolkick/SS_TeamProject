@@ -140,6 +140,17 @@ void ShowAllFiles(string path_str)
 			cout << char(254) << " ";
 			SetConsoleTextAttribute(hConsole, 7);
 		}
+		else if (it->is_directory())
+		{
+			cout << char(176) << " ";
+		}
+		else
+		{
+			HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsole, 12);
+			cout << char(254) << " ";
+			SetConsoleTextAttribute(hConsole, 7);
+		}
 
 		cout << file_name << endl;
 	}
