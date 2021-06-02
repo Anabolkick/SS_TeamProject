@@ -258,49 +258,51 @@ int CheckInput(int size) {
 
 void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 {
-	string command;
-	cout << "Enter file to edit or folder to switch" << endl;
-	cout << "'all' - To change/write tags for all files." << endl;
+	string command, scan;
+	cout << "\nEnter file to edit or folder to switch\n'all' - To change/write tags for all files." << endl;
 	getline(cin, command);
 
 	fs::directory_iterator it(path_str);
 	if (command == "all")
 	{
 		int f_size = files.size();
-		int value, value_prn = -1, value_set = -1, prn_file = -1, set_file = -1, tag = -1;
-		cout << "\nChoose the operation:\n 1-Print tags\n 2-Set tags\n 0-Exit" << endl;
-		cin >> value;
-		switch (value) {
-		case 1:
-			for (int i = 0; i < f_size; i++)
-			{
-				PrintTags(files[i]);
-			}
-			break;
-
-		case 2:
-			cout << "\nChoose the operation:\n 1-Set all tags for all files\n 2-Set one tag for all files\n 0-Back" << endl;
-			cin >> value_set;
-			switch (value_set) {
+		int value=-1, value_prn = -1, value_set = -1, prn_file = -1, set_file = -1, tag = -1;
+		while (value != 0) {
+			cout << "\nChoose the operation:\n 1-Print tags\n 2-Set tags\n 0-Exit" << endl;
+			cin >> value;
+			switch (value) {
 			case 1:
 				for (int i = 0; i < f_size; i++)
 				{
-					cout << "\n--------Input for file " << i + 1 << "--------" << endl;
-					SetAll(files[i]);
-				}
-				break;
-			case 2:
-				cout << "\nChoose the tag:\n 1-Title\t 5-Track\n 2-Artist\t 6-Comment\n 3-Album\t 7-Genre\n 4-Year" << endl;
-				tag = CheckInput(7);
-				for (int i = 0; i < f_size; i++)
-				{
-					cout << "\n--------Input for file " << i + 1 << "--------" << endl;
-					SetOne(files[i], tag);
+					PrintTags(files[i]);
 				}
 				break;
 
+			case 2:
+				cout << "\nChoose the operation:\n 1-Set all tags for all files\n 2-Set one tag for all files\n 0-Back" << endl;
+				cin >> value_set;
+				getline(cin, scan);
+				switch (value_set) {
+				case 1:
+					for (int i = 0; i < f_size; i++)
+					{
+						cout << "\n--------Input for file " << i + 1 << "--------" << endl;
+						SetAll(files[i]);
+					}
+					break;
+				case 2:
+					cout << "\nChoose the tag:\n 1-Title\t 5-Track\n 2-Artist\t 6-Comment\n 3-Album\t 7-Genre\n 4-Year" << endl;
+					tag = CheckInput(7);
+					for (int i = 0; i < f_size; i++)
+					{
+						cout << "\n--------Input for file " << i + 1 << "--------" << endl;
+						SetOne(files[i], tag);
+					}
+					break;
+
+				}
+				break;
 			}
-			break;
 		}
 	}
 	else
@@ -323,7 +325,7 @@ void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 				const char* temp = path_str.c_str();
 				TagLib::FileRef f(temp);
 
-				cout << "\nChoose the operation:\n 1-Print tags\n 2-Set tags\n 0-Exit" << endl; // TODO 	 выбор выводить или изменять
+				cout << "\nChoose the operation:\n 1-Print tags\n 2-Set tags\n 0-Exit\n" << temp << endl; // TODO 	 выбор выводить или изменять
 				int value = -1, value_set = -1, set_file = -1, tag = -1;	 //Могу ли я ка
 				cin >> value;
 				switch (value) {
@@ -331,7 +333,7 @@ void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 					PrintTags(f);
 					break;
 				case 2:
-					cout << "\nChoose the operation:\n 1-Set all tags\n 2-Set one tags \n 0-Back" << endl;
+					cout << "\nChoose the operation:\n 1-Set all tags\n 2-Set one tag \n 0-Back" << endl;
 					cin >> value_set;
 					//getline(cin, scan);
 
