@@ -127,7 +127,7 @@ void PrintTags(TagLib::FileRef& file) {
 	cout << "Artist: \t" << file.tag()->artist() << endl;
 	cout << "Album: \t\t" << file.tag()->album() << endl;
 	cout << "Year: \t\t" << file.tag()->year() << endl;
-	cout << "Track: \t\t" << file.tag()->track() << endl;
+	cout << "Track number: \t\t" << file.tag()->track() << endl;
 	cout << "Comment: \t" << file.tag()->comment() << endl;
 	cout << "Genre: \t\t" << file.tag()->genre() << endl;
 	//cout << "______________________________________________" << endl << endl;
@@ -139,7 +139,7 @@ void SetAll(TagLib::FileRef& file) {
 	cout << "Artist: "; getline(cin, scan); file.tag()->setArtist(scan);
 	cout << "Album: "; getline(cin, scan); file.tag()->setAlbum(scan);
 	cout << "Year: "; getline(cin, scan); file.tag()->setYear(stoi(scan));
-	cout << "Track: "; getline(cin, scan); file.tag()->setTrack(stoi(scan));
+	cout << "Track number: "; getline(cin, scan); file.tag()->setTrack(stoi(scan));
 	cout << "Comment: "; getline(cin, scan); file.tag()->setComment(scan);
 	cout << "Genre: "; getline(cin, scan); file.tag()->setGenre(scan);
 }
@@ -160,7 +160,7 @@ void SetOne(TagLib::FileRef& file, int tag) {
 		cout << "\nYear: "; getline(cin, scan); file.tag()->setYear(stoi(scan));
 		break;
 	case 4:
-		cout << "\nTrack: "; getline(cin, scan); file.tag()->setTrack(stoi(scan));
+		cout << "\nTrack number: "; getline(cin, scan); file.tag()->setTrack(stoi(scan));
 		break;
 	case 5:
 		cout << "\nComment: "; getline(cin, scan); file.tag()->setComment(scan);
@@ -191,7 +191,7 @@ int CheckInput(int size) {
 void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 {
 	string command, scan;
-	cout << "\nEnter file to edit or folder to switch\n'all' - To change/write tags for all files." << endl;
+	cout << "\nEnter file to edit or folder to switch\n'all' - To change/write tags for all files.\n'back' - To go back in the directory." << endl;
 	getline(cin, command);
 
 	fs::directory_iterator it(path_str);
@@ -221,7 +221,7 @@ void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 					}
 					break;
 				case 2:
-					cout << "\nChoose the tag:\n 1-Title\t 5-Track\n 2-Artist\t 6-Comment\n 3-Album\t 7-Genre\n 4-Year" << endl;
+					cout << "\nChoose the tag:\n 1-Title\t 5-Track number\n 2-Artist\t 6-Comment\n 3-Album\t 7-Genre\n 4-Year" << endl;
 					tag = CheckInput(7);
 					for (int i = 0; i < files.size(); i++)
 					{
@@ -230,6 +230,15 @@ void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 					}
 				}
 			}
+		}
+	}
+	else if (command == "back")
+	{
+		if (path_str.rfind("\\") != string::npos)
+		{
+			path_str.erase(path_str.rfind("\\"), 50);
+			ShowAllFiles(path_str, files);
+			return;
 		}
 	}
 	else
@@ -277,7 +286,7 @@ void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 							SetAll(f);
 							break;
 						case 2:
-							cout << "\nChoose the tag:\n 1-Title\t 5-Track\n 2-Artist\t 6-Comment\n 3-Album\t 7-Genre\n 4-Year" << endl;
+							cout << "\nChoose the tag:\n 1-Title\t 5-Track number\n 2-Artist\t 6-Comment\n 3-Album\t 7-Genre\n 4-Year" << endl;
 							tag = CheckInput(7);
 							SetOne(f, tag);
 						}
@@ -291,4 +300,5 @@ void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 			}
 		}
 	}
+
 }
