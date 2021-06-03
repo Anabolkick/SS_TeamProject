@@ -9,15 +9,13 @@ using namespace std;
 namespace fs = std::filesystem;
 
 void SelectFile(string& path_str, vector<TagLib::FileRef> & files);
-void ShowAllFiles(string path_str, vector<TagLib::FileRef>& files);
+void ShowAllFiles(string& path_str, vector<TagLib::FileRef>& files);
 void PrintTags(TagLib::FileRef& file);
 void SetAll(TagLib::FileRef& file);
 void SetOne(TagLib::FileRef& file, int tag);
 int CheckInput(int size);
 vector<string> FindMP3(string path_str);
 void SelectPath(string& path_str);
-
-
 
 int main()
 {
@@ -49,7 +47,7 @@ void SelectPath(string& path_str)
 	}
 }
 //Выводит все файлы
-void ShowAllFiles(string path_str, vector<TagLib::FileRef> & files)
+void ShowAllFiles(string& path_str, vector<TagLib::FileRef> & files)
 {
 	fs::directory_iterator it(path_str);
 
@@ -132,7 +130,7 @@ void PrintTags(TagLib::FileRef& file) {
 	cout << "Track: \t\t" << file.tag()->track() << endl;
 	cout << "Comment: \t" << file.tag()->comment() << endl;
 	cout << "Genre: \t\t" << file.tag()->genre() << endl;
-	cout << "______________________________________________" << endl << endl;
+	//cout << "______________________________________________" << endl << endl;
 }
 
 void SetAll(TagLib::FileRef& file) {
@@ -175,18 +173,18 @@ void SetOne(TagLib::FileRef& file, int tag) {
 int CheckInput(int size) {
 	int file = -1;
 	string scan = " ";
-	cout << "\nWrite a number of the file/tag: "; //how to write more universal?
+	cout << "\nWrite a number of the tag: ";
 	cin >> file;
 	getline(cin, scan);
 	try {
 		if (file < 1 || file > size) {
-			throw "Incorrect input! ";
+			throw 1;
 		}
 		return file - 1;
 	}
-	catch (string warn) {
-		cout << warn << "Enter number between 1 and " << size << "!";
-		CheckInput(size);
+	catch (int) {
+		cout << "Incorrect input! Enter number between 1 and " << size << "!";
+		return file = CheckInput(size);
 	}
 }
 
