@@ -8,7 +8,7 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-void SelectFile(string& path_str, vector<TagLib::FileRef> & files);
+void SelectFile(string& path_str, vector<TagLib::FileRef>& files);
 void ShowAllFiles(string& path_str, vector<TagLib::FileRef>& files);
 void PrintTags(TagLib::FileRef& file);
 void SetAll(TagLib::FileRef& file);
@@ -47,7 +47,7 @@ void SelectPath(string& path_str)
 	}
 }
 //Выводит все файлы
-void ShowAllFiles(string& path_str, vector<TagLib::FileRef> & files)
+void ShowAllFiles(string& path_str, vector<TagLib::FileRef>& files)
 {
 	fs::directory_iterator it(path_str);
 
@@ -188,7 +188,7 @@ int CheckInput(int size) {
 	}
 }
 
-void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
+void SelectFile(string& path_str, vector<TagLib::FileRef>& files)
 {
 	string command, scan;
 	cout << "\nYour current location: " << path_str;
@@ -198,7 +198,7 @@ void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 	fs::directory_iterator it(path_str);
 	if (command == "all")
 	{
-		int value=-1, value_set = -1, tag = -1;
+		int value = -1, value_set = -1, tag = -1;
 		while (value != 0) {
 			cout << "\nChoose the operation:\n 1-Print tags\n 2-Set tags\n 0-Exit" << endl;
 			cin >> value;
@@ -235,12 +235,48 @@ void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 	}
 	else if (command == "back")
 	{
-		if (path_str.rfind("\\") != string::npos)
+		try
 		{
-			path_str.erase(path_str.rfind("\\"), 50);
-			ShowAllFiles(path_str, files);
-			return;
+			if (path_str.rfind("\\") != string::npos)
+			{
+				if (path_str.rfind(":") != string::npos && path_str.rfind("\\") != string::npos)
+				{
+					path_str.erase(path_str.rfind("\\"), 50);
+					ShowAllFiles(path_str, files);
+					return;
+				}
+				else
+				{
+					throw(1);
+				}
+
+			}
+			else if (path_str.rfind(":") != string::npos)
+			{
+				if (path_str.rfind(":") != string::npos && path_str.rfind("\\") != string::npos)
+				{
+					path_str.erase(path_str.rfind(":"), 50);
+					ShowAllFiles(path_str, files);
+					return;
+				}
+				else
+				{
+					throw(2);
+				}
+
+			}
+			else
+			{
+				cout << "You can`t go back";
+				SelectFile(path_str, files);
+			}
 		}
+		catch (int i)
+		{
+			cout << "You can`t go back";
+			SelectFile(path_str, files);
+		}
+
 	}
 	else
 	{
@@ -263,7 +299,7 @@ void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 
 				for (int i = 0; i < files.size(); i++)
 				{
-					if (files[i].file()->name().toString() == path_str) 
+					if (files[i].file()->name().toString() == path_str)
 					{
 						f = files[i];
 						break;
