@@ -191,6 +191,7 @@ int CheckInput(int size) {
 void SelectFile(string& path_str, vector<TagLib::FileRef> & files)
 {
 	string command, scan;
+	cout << "\nYour current location: " << path_str;
 	cout << "\nEnter file to edit or folder to switch\n'all' - To change/write tags for all files.\n'back' - To go back in the directory." << endl;
 	getline(cin, command);
 
